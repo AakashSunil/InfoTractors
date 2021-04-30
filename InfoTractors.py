@@ -39,13 +39,15 @@ from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Doc
 
+# Template Import
+from Part_Template import getPart
+
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
 def file_read(input_file):
     f = open(input_file,encoding="ascii",errors="ignore")
     text = f.read()
-    text = nlp(text)
-    text=text._.coref_resolved
+    # text = nlp(text)
     # print(text)
     f.close()
 
@@ -55,8 +57,12 @@ def file_read(input_file):
 
 # Sentences Extracted from Paragraphs
 def sentence_tokenizer(text):
-    sentences = sent_tokenize(text)
-    return sentences
+    sentence_tokens = []
+    read_text = nlp(text)
+    read_text = read_text._.coref_resolved
+    
+    sentence_tokens = sent_tokenize(read_text)
+    return sentence_tokens
 
 # Words Extracted from a Sentence
 def word_tokenizer(sentence):
@@ -341,9 +347,21 @@ print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Sta
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 
+def merge_entities(document):
+    with document.retokenize() as retokenizer:
+        for entitiy in document.ents:
+            retokenizer.merge(entity)
+    return document
+
 files_list = glob.glob('WikipediaArticles\*.txt')
 for file_name in files_list:
     
+    # ---------------------------------------- Part Template ------------------------------------- #
+    text_data = file_read(file_name)
+    sentences = sentence_tokenizer(text_data)
+    
+    output_part_template = getPart(sentences)
+    # print(output_part_template)
     # Getting the File Name from the Path
     base_name = os.path.basename(file_name)
     output_file_name = os.path.splitext(base_name)[0]
@@ -351,7 +369,8 @@ for file_name in files_list:
     final_output_dictionary={}
     final_output_dictionary["document"]=base_name
     final_output_dictionary["extraction"]=[]
-
+    for templates in output_part_template:
+        final_output_dictionary['extraction'].append(templates)
     # Create the Features Folder with TextFile Folder
     try:
         os.makedirs('Output_JSONs/')
@@ -368,5 +387,6 @@ for file_name in files_list:
     output_file.close()
 
     print('Output JSON for "' + base_name + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
+    # input('Next?')
 
 print('\nTemplate Extraction Completed\n')
