@@ -349,12 +349,6 @@ print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Sta
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 
-def merge_entities(document):
-    with document.retokenize() as retokenizer:
-        for entitiy in document.ents:
-            retokenizer.merge(entity)
-    return document
-
 files_list = glob.glob('WikipediaArticles\*.txt')
 for file_name in files_list:
     
