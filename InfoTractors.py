@@ -6,6 +6,7 @@ from itertools import chain
 import os
 import errno
 import glob
+import json
 
 # NLTK Imports
 import nltk
@@ -342,4 +343,27 @@ print('Starting Task 2\n\n')
 
 files_list = glob.glob('WikipediaArticles\*.txt')
 for file_name in files_list:
-    print(file_name)
+    
+    # Getting the File Name from the Path
+    base_name = os.path.basename(file_name)
+    output_file_name = os.path.splitext(base_name)[0]
+
+    final_output_dictionary={}
+    final_output_dictionary["document"]=base_name
+    final_output_dictionary["extraction"]=[]
+
+    # Create the Features Folder with TextFile Folder
+    try:
+        os.makedirs('Output_JSONs/')
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+    
+    json_output_file_name = "Output_" + output_file_name + ".json"
+    json_object_output = json.loads(json.dumps(final_output_dictionary))
+    final_json_data = json.dumps(json_object_output, indent=2)
+
+    output_file = open('Output_JSONs/'+json_output_file_name, "w")
+    output_file.write(final_json_data)
+    output_file.close()
+
