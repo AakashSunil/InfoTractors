@@ -39,8 +39,10 @@ from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Doc
 
+
 # Template Import
 from Part_Template import getPart
+from Aquire_Template import getAquire
 
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
@@ -356,12 +358,12 @@ def merge_entities(document):
 files_list = glob.glob('WikipediaArticles\*.txt')
 for file_name in files_list:
     
-    # ---------------------------------------- Part Template ------------------------------------- #
     text_data = file_read(file_name)
     sentences = sentence_tokenizer(text_data)
     
     output_part_template = getPart(sentences)
-    # print(output_part_template)
+    output_acquire_template = getAquire(sentences)
+
     # Getting the File Name from the Path
     base_name = os.path.basename(file_name)
     output_file_name = os.path.splitext(base_name)[0]
@@ -369,8 +371,13 @@ for file_name in files_list:
     final_output_dictionary={}
     final_output_dictionary["document"]=base_name
     final_output_dictionary["extraction"]=[]
-    for templates in output_part_template:
+
+    for acquire_templates in output_acquire_template:
+        final_output_dictionary['extraction'].append(acquire)
+        
+    for part_templates in output_part_template:
         final_output_dictionary['extraction'].append(templates)
+
     # Create the Features Folder with TextFile Folder
     try:
         os.makedirs('Output_JSONs/')
