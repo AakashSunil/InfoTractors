@@ -19,9 +19,12 @@ Before Starting the code run the requirements text file to install required pack
     pip install -r requirements.txt
 
 The Folder of the Project consists the following
-1. One folder with all text file articles.
-2. A sample JSON File which contains the sample output.
-3. Readme File containing how to run the program.
+
+1. Program (InfoTractors.py) to run the Tasks - Feature Extraction and Template Extraction
+2. One folder with all text file articles.
+3. requirements.txt file to install the required packages
+4. Readme File containing how to run the program.
+5. A sample JSON File which contains the sample output.
 
 Program Name: InfoTractors.py
 To run the code
