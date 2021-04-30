@@ -25,6 +25,7 @@ def merge_entities(document):
 
 
 def getAquire(sentences):
+    final_part=[]
     for sentence in sentences:
         try:
             sentence = nlp(sentence_text)
@@ -53,8 +54,10 @@ def getAquire(sentences):
                         temp_dict["arguments"]["5"]=i["source"]
                     else:
                         temp_dict["arguments"]["5"]=i["source"].text
-                    final_dict["extraction"].append(temp_dict)
-    return 0
+                    final_part.append(temp_dict)
+        except:
+            continue 
+    return final_part
     
 def extraction(sentences):
     template = {"Org1": "", "Org2": "", "date": ""}
