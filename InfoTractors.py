@@ -373,10 +373,10 @@ for file_name in files_list:
     final_output_dictionary["extraction"]=[]
 
     for acquire_templates in output_acquire_template:
-        final_output_dictionary['extraction'].append(acquire)
+        final_output_dictionary['extraction'].append(acquire_templates)
         
     for part_templates in output_part_template:
-        final_output_dictionary['extraction'].append(templates)
+        final_output_dictionary['extraction'].append(part_templates)
 
     # Create the Features Folder with TextFile Folder
     try:
