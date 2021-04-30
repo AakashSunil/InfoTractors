@@ -107,7 +107,6 @@ def dependency_parsing(sentence):
 
 def named_entity_recognition(sentence):
     ner = {}
-    # en_nlp =spacy.load('en_core_web_sm')
     doc = nlp(sentence)
     for X in doc.ents:
         key_entities = ''.join(map(str, X.text))
@@ -116,23 +115,42 @@ def named_entity_recognition(sentence):
     return ner
 
 def wordnet_features(words):
+
+    # Initializtion of the Wordnet Features Dictionaries
     synonymns = {}
     hypernyms = {}
     hyponyms = {}
     meronyms = {}
     holonyms = {}
+
+    # Looping through Words
     for word in words:
+        # Initialization for temporary Lists for each Feature
         temp_synonymns = []
         temp_hypernyms = []
         temp_hyponyms = []
         temp_meronyms = []
         temp_holonyms = []
+
+        # Synsets for the Word (WordNet)
         for i,j in enumerate(wn.synsets(word)):
+
+            # Adding the synonymns to the List
             temp_synonymns.extend(wn.synset(j.name()).lemma_names())
+            
+            # Adding the hypernymns to the List
             temp_hypernyms.extend(list(chain(*[l.lemma_names() for l in j.hypernyms()])))
+            
+            # Adding the hyponymns to the List
             temp_hyponyms.extend(list(chain(*[l.lemma_names() for l in j.hyponyms()])))
+            
+            # Adding the meronymns to the List
             temp_meronyms.extend(list(chain(*[l.lemma_names() for l in j.part_meronyms()])))
+            
+            # Adding the holonymns to the List
             temp_holonyms.extend(list(chain(*[l.lemma_names() for l in j.part_holonyms()])))
+        
+        # Adding to the Dictionary
         synonymns[word] = temp_synonymns
         hypernyms[word] = temp_hypernyms
         hyponyms[word] = temp_hyponyms
@@ -143,6 +161,7 @@ def wordnet_features(words):
 
 def lemmatization(word_tokens):
     
+    # Initializtion of Lemmas based on Word Tokens (NLTK)
     lemmas = {}
     
     # Looping through the Word Tokens
@@ -154,6 +173,7 @@ def lemmatization(word_tokens):
 
 def lemmatization_wordnet(wordnet_tagged):
 
+    # Initializtion of Lemmas basd on Wordnet Tagged Words
     lemmas_wordnet = {}
 
     # Looping through the Wordnet Tagged Words
@@ -170,6 +190,7 @@ def lemmatization_wordnet(wordnet_tagged):
 def NLP_Feature_Pipeline(sentence,all_stopwords):
 
     # Word Tokens from the Sentence without Stop Words
+
     # word_tokens = [word for word in word_tokenizer(sentence) if not word in all_stopwords]
     word_tokens = word_tokenizer(sentence)
 
@@ -193,7 +214,8 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
 
     # Initialization of the Lemmas for a Sentence
     lemmas = lemmatization(word_tokens)
-    
+
+    # Spacy - Named Entity Recognition for Sentence
     ner = named_entity_recognition(sentence)
     
     return word_tokens,pos_tagged,wordnet_tagged,stemmas,lemmas,lemmas_wordnet,syn,hyper,hypo,mero,holo,d_parse,ner
