@@ -36,7 +36,7 @@ def getAquire(sentences):
             if(ans!=[]):
                 for i in ans:
                     temp_dict={}
-                    temp_dict["template"]="BUY"
+                    temp_dict["template"]="ACQUIRE"
                     temp_dict["sentences"]=[]
                     temp_dict["sentences"].append(sentence.text)
                     temp_dict["arguments"]={}
