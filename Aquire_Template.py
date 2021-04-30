@@ -17,6 +17,13 @@ nlp.add_pipe(ruler)
 merge_nps = nlp.create_pipe("merge_noun_chunks")
 nlp.add_pipe(merge_nps)
 
+def merge_entities(document):
+    with document.retokenize() as retokenizer:
+        for entity in document.ents:
+            retokenizer.merge(entity)
+    return document
+
+
 def getAquire(sentences):
     for sentence in sentences:
         try:
