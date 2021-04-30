@@ -335,7 +335,7 @@ with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as 
 
 print('\n\nFeatures Found from the Text and Printed on Individual Files in the Features/'+output_file_name+' Folder')
 input('Press Any Key to move to Task 2')
-print('Starting Task 2\n\n')
+print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
 
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
@@ -367,3 +367,6 @@ for file_name in files_list:
     output_file.write(final_json_data)
     output_file.close()
 
+    print('Output JSON for "' + base_name + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
+
+print('\nTemplate Extraction Completed\n')
