@@ -26,8 +26,8 @@ def merge_entities(document):
 
 def getAquire(sentences):
     final_part=[]
-    for sentence in sentences:
-        try:
+    for sentence_text in sentences:
+        # try:
             sentence = nlp(sentence_text)
             sentence=merge_entities(sentence)
 
@@ -40,26 +40,16 @@ def getAquire(sentences):
                     temp_dict["sentences"]=[]
                     temp_dict["sentences"].append(sentence.text)
                     temp_dict["arguments"]={}
-                    temp_dict["arguments"]["1"]=i["buyer"].text
-                    temp_dict["arguments"]["2"]=i["item"].text
-                    if(len(i["price"])==0):
-                        temp_dict["arguments"]["3"]=i["price"]
-                    else:
-                        temp_dict["arguments"]["3"]=i["price"].text
-                    if(len(i["quantity"])==0):
-                        temp_dict["arguments"]["4"]=i["quantity"]
-                    else:
-                        temp_dict["arguments"]["4"]=i["quantity"].text
-                    if(len(i["source"])==0):
-                        temp_dict["arguments"]["5"]=i["source"]
-                    else:
-                        temp_dict["arguments"]["5"]=i["source"].text
+                    temp_dict["arguments"]["1"]=i["Org1"].text
+                    temp_dict["arguments"]["2"]=i["Org2"].text
+                    temp_dict["arguments"]["3"]=i["date"]
+                    
                     final_part.append(temp_dict)
-        except:
-            continue 
+        # except:
+            # continue 
     return final_part
     
-def extraction(sentences):
+def extraction(doc):
     template = {"Org1": "", "Org2": "", "date": ""}
     list_of_templates = []
     

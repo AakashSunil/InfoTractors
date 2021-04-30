@@ -39,7 +39,7 @@ from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Doc
 
-import Aquire_Template
+from Aquire_Template import getAquire
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
 def file_read(input_file):
@@ -348,7 +348,7 @@ for file_name in files_list:
     text_data = file_read(file_name)
     sentences = sentence_tokenizer(text_data)
 
-    output_acquire_template = Aquire_Template.getAquire(sentences)
+    output_acquire_template = getAquire(sentences)
     # Getting the File Name from the Path
     base_name = os.path.basename(file_name)
     output_file_name = os.path.splitext(base_name)[0]
@@ -357,6 +357,8 @@ for file_name in files_list:
     final_output_dictionary["document"]=base_name
     final_output_dictionary["extraction"]=[]
 
+    for acquire in output_acquire_template:
+        final_output_dictionary['extraction'].append(acquire)
     # Create the Features Folder with TextFile Folder
     try:
         os.makedirs('Output_JSONs/')
