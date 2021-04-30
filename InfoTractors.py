@@ -39,6 +39,7 @@ from spacy.matcher import Matcher
 from spacy.pipeline import EntityRuler
 from spacy.tokens import Doc
 
+import Aquire_Template
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
 def file_read(input_file):
@@ -344,6 +345,10 @@ print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Sta
 files_list = glob.glob('WikipediaArticles\*.txt')
 for file_name in files_list:
     
+    text_data = file_read(file_name)
+    sentences = sentence_tokenizer(text_data)
+
+    output_acquire_template = Aquire_Template.getAquire(sentences)
     # Getting the File Name from the Path
     base_name = os.path.basename(file_name)
     output_file_name = os.path.splitext(base_name)[0]
