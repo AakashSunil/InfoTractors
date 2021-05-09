@@ -43,16 +43,27 @@ from Part_Template_ORG import getPartOrg
 
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
-def file_read(input_file):
-    f = open(input_file,encoding="ascii",errors="ignore")
-    text = f.read()
-    # text = nlp(text)
-    # print(text)
+def file_read(text):
+    f = open(text, encoding="ascii", errors="ignore")
+    lines = f.readlines()
+    sentences = ''
+    for line in lines:
+        # print(line)
+        if line.find('  ') == 0 or '\t' in line:
+            # print(True)
+            sentences = sentences + line.strip() + "\n"
+            # print(sentences)
+            # input("s")
+
+        else:
+            sentences = sentences + line
+        
     f.close()
 
-    return text
-    
+    return sentences
+
 # ---------- Functions for Features from Input Text ---------------- #
+
 
 # Sentences Extracted from Paragraphs
 def sentence_tokenizer(text):
@@ -270,11 +281,12 @@ meronyms_list = []
 holonyms_list = []
 dependency_parse_tree_list = []
 ners_list = []
-# Text File Read
+
+# Read text File into a variable
 text_data = file_read(input_file)
 
 # Sentence Tokenizer
-sentences = sentence_tokenizer(text_data)
+sentences = file_read_sentence_tokenizer(text_data)
 
 # Getting the features in each sentence - Loop Sentence by Sentence
 for sentence in sentences:
