@@ -356,8 +356,8 @@ print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Sta
 
 # files_list = glob.glob('WikipediaArticles\*.txt')
 # for file_name in files_list:
-output_part_template_org = getPartOrg(sentences)
-output_part_template = getPart(sentences)
+output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
+output_part_template = getPart(sentences,ners_list)
 # output_acquire_template = getAquire(sentences)
 
 # # Getting the File Name from the Path
