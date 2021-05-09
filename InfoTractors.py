@@ -359,7 +359,7 @@ with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as 
 
 print('\nFeatures Found from the Text File - "'+base+'" are Printed on Individual Files in the Features/'+output_file_name+' Folder')    
 
-print("-----------------------------------------------------------------------------------------------------------")
+print("\n-----------------------------------------------------------------------------------------------------------")
 # input('Press Any Key to move to Task 2')
 print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
 print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Organization)\n2. Acquire(Organization, Organization, Date)\n3. Born(Person/Organization, Date, Location)\n')
@@ -409,6 +409,6 @@ output_file.close()
 
 print('Output JSON for "' + base + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
 # input('Next?')
-print("-----------------------------------------------------------------------------------------------------------")
+print("\n-----------------------------------------------------------------------------------------------------------")
 
 print('\nTemplate Extraction Completed\n')
