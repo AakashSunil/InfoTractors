@@ -11,6 +11,7 @@ import json
 # NLTK Imports
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk import Tree
 
 try:
     nltk.data.find('tokenizers/punkt')
@@ -43,6 +44,7 @@ from spacy.tokens import Doc
 # Template Import
 from Part_Template import getPart
 from Aquire_Template import getAquire
+from Part_Template_ORG import getPartOrg
 
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
@@ -64,6 +66,7 @@ def sentence_tokenizer(text):
     read_text = read_text._.coref_resolved
     
     sentence_tokens = sent_tokenize(read_text)
+    
     return sentence_tokens
 
 # Words Extracted from a Sentence
@@ -238,7 +241,7 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
 
 
 # Input from Command Line
-input_file = sys.argv[1]
+# input_file = sys.argv[1]
 
 # Loading Spacy English Model 
 nlp = spacy.load('en_core_web_sm')
@@ -252,98 +255,100 @@ all_stopwords = nlp.Defaults.stop_words
 # take out the 'not' stopword from the default list as not is an important stopword that can alter meaning if not included
 all_stopwords.remove('not')
 
-# Initialization of Lists - Words, POS_Tags, Wordnet Tagged and Lemmatized Sentence Lists
-words_list=[]
-pos_tag_list = []
-wordnet_tagged_list = []
-stemmas_list = []
-lemmas_list = []
-lemmas_wordnet_list = []
-synonymns_list = []
-hypernyms_list = []
-hyponyms_list = []
-meronyms_list = []
-holonyms_list = []
-dependency_parse_tree_list = []
-ners_list = []
+# # Wordnet Lematizer Initialization
+# lemmatizer = WordNetLemmatizer()
 
-# Wordnet Lematizer Initialization
-lemmatizer = WordNetLemmatizer()
+# files_list = glob.glob('WikipediaArticles\*.txt')
+# for file_name in files_list:
 
-# Text File Read
-text_data = file_read(input_file)
+#     # Initialization of Lists - Words, POS_Tags, Wordnet Tagged and Lemmatized Sentence Lists
+#     words_list=[]
+#     pos_tag_list = []
+#     wordnet_tagged_list = []
+#     stemmas_list = []
+#     lemmas_list = []
+#     lemmas_wordnet_list = []
+#     synonymns_list = []
+#     hypernyms_list = []
+#     hyponyms_list = []
+#     meronyms_list = []
+#     holonyms_list = []
+#     dependency_parse_tree_list = []
+#     ners_list = []
+#     # Text File Read
+#     text_data = file_read(file_name)
 
-# Sentence Tokenizer
-sentences = sentence_tokenizer(text_data)
+#     # Sentence Tokenizer
+#     sentences = sentence_tokenizer(text_data)
 
-# Getting the features in each sentence - Loop Sentence by Sentence
-for sentence in sentences:
+#     # Getting the features in each sentence - Loop Sentence by Sentence
+#     for sentence in sentences:
 
-    # NLP Pipeline to extract all features - Sentence by Sentence
-    word_tokens,pos_tagged,wordnet_tagged,stemma_list,lemmas,lemmas_wordnet,synonymn_list,hypernym_list,hyponym_list,meronym_list,holonym_list,dependency_parse_tree,ner_list = NLP_Feature_Pipeline(sentence,all_stopwords)
+#         # NLP Pipeline to extract all features - Sentence by Sentence
+#         word_tokens,pos_tagged,wordnet_tagged,stemma_list,lemmas,lemmas_wordnet,synonymn_list,hypernym_list,hyponym_list,meronym_list,holonym_list,dependency_parse_tree,ner_list = NLP_Feature_Pipeline(sentence,all_stopwords)
 
-    # Appending the Features to Individual Lists
-    words_list.append(word_tokens)
-    pos_tag_list.append(pos_tagged)
-    wordnet_tagged_list.append(wordnet_tagged)
-    stemmas_list.append(stemma_list)
-    lemmas_list.append(lemmas)
-    lemmas_wordnet_list.append(lemmas_wordnet)
-    synonymns_list.append(synonymn_list)
-    hypernyms_list.append(hypernym_list)
-    hyponyms_list.append(hyponym_list)
-    meronyms_list.append(meronym_list)
-    holonyms_list.append(holonym_list)
-    dependency_parse_tree_list.append(dependency_parse_tree)
-    ners_list.append(ner_list)
+#         # Appending the Features to Individual Lists
+#         words_list.append(word_tokens)
+#         pos_tag_list.append(pos_tagged)
+#         wordnet_tagged_list.append(wordnet_tagged)
+#         stemmas_list.append(stemma_list)
+#         lemmas_list.append(lemmas)
+#         lemmas_wordnet_list.append(lemmas_wordnet)
+#         synonymns_list.append(synonymn_list)
+#         hypernyms_list.append(hypernym_list)
+#         hyponyms_list.append(hyponym_list)
+#         meronyms_list.append(meronym_list)
+#         holonyms_list.append(holonym_list)
+#         dependency_parse_tree_list.append(dependency_parse_tree)
+#         ners_list.append(ner_list)
 
-# --------------------------------- Output Features -------------------------------------- #
+#     # --------------------------------- Output Features -------------------------------------- #
 
-# Getting the File Name from the Path
-base = os.path.basename(input_file)
-output_file_name = os.path.splitext(base)[0]
+#     # Getting the File Name from the Path
+#     base = os.path.basename(file_name)
+#     output_file_name = os.path.splitext(base)[0]
 
-# Create the Features Folder with TextFile Folder
-try:
-    os.makedirs('Features/'+ output_file_name)
-except OSError as e:
-    if e.errno != errno.EEXIST:
-        raise
+#     # Create the Features Folder with TextFile Folder
+#     try:
+#         os.makedirs('Features/'+ output_file_name)
+#     except OSError as e:
+#         if e.errno != errno.EEXIST:
+#             raise
 
-# Printing to Files
-with open('Features/'+output_file_name+'/'+output_file_name+'_Word_Tokens.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in words_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_POS_Tags.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in pos_tag_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_Stemmas.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in stemmas_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_Lemmas.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in lemmas_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_Lemmas_WordNet.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in lemmas_wordnet_list)
+#     # Printing to Files
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_Word_Tokens.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in words_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_POS_Tags.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in pos_tag_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_Stemmas.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in stemmas_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_Lemmas.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in lemmas_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_Lemmas_WordNet.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in lemmas_wordnet_list)
 
-with open('Features/'+output_file_name+'/'+output_file_name+'_Dependency_Parse_Tree.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in dependency_parse_tree_list)
-
-
-with open('Features/'+output_file_name+'/'+output_file_name+'_synonyms.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in synonymns_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_hypernymns.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in hypernyms_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_hyponymns.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in hyponyms_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_meronymns.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in meronyms_list)
-with open('Features/'+output_file_name+'/'+output_file_name+'_holonymns.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in holonyms_list)
-
-with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as filehandle:
-    filehandle.writelines("%s\n" % place for place in ners_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_Dependency_Parse_Tree.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in dependency_parse_tree_list)
 
 
-print('\n\nFeatures Found from the Text and Printed on Individual Files in the Features/'+output_file_name+' Folder')
-input('Press Any Key to move to Task 2')
-print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_synonyms.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in synonymns_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_hypernymns.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in hypernyms_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_hyponymns.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in hyponyms_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_meronymns.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in meronyms_list)
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_holonymns.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in holonyms_list)
+
+#     with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as filehandle:
+#         filehandle.writelines("%s\n" % place for place in ners_list)
+
+
+#     print('\n\nFeatures Found from the Text and Printed on Individual Files in the Features/'+output_file_name+' Folder')
+# # input('Press Any Key to move to Task 2')
+# print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
 
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
@@ -355,8 +360,9 @@ for file_name in files_list:
     text_data = file_read(file_name)
     sentences = sentence_tokenizer(text_data)
     
+    output_part_template_org = getPartOrg(sentences)
     output_part_template = getPart(sentences)
-    output_acquire_template = getAquire(sentences)
+    # output_acquire_template = getAquire(sentences)
 
     # Getting the File Name from the Path
     base_name = os.path.basename(file_name)
@@ -366,11 +372,15 @@ for file_name in files_list:
     final_output_dictionary["document"]=base_name
     final_output_dictionary["extraction"]=[]
 
-    for acquire_templates in output_acquire_template:
-        final_output_dictionary['extraction'].append(acquire_templates)
+    # for acquire_templates in output_acquire_template:
+    #     final_output_dictionary['extraction'].append(acquire_templates)
         
     for part_templates in output_part_template:
         final_output_dictionary['extraction'].append(part_templates)
+
+    for part_templates_org in output_part_template_org:
+        final_output_dictionary['extraction'].append(part_templates_org)
+
 
     # Create the Features Folder with TextFile Folder
     try:
