@@ -248,6 +248,7 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
 
 # Input from Command Line
 input_file = sys.argv[1]
+base = os.path.basename(input_file)
 
 # Loading Spacy English Model 
 nlp = spacy.load('en_core_web_sm')
@@ -282,14 +283,18 @@ holonyms_list = []
 dependency_parse_tree_list = []
 ners_list = []
 
+print("-----------------------------------------------------------------------------------------------------------")
+print('\nStarting Task 1 - Feature Extraction from Text File - '+base+'\n')
+
 # Read text File into a variable
 text_data = file_read(input_file)
 
 # Sentence Tokenizer
 sentences = sentence_tokenizer(text_data)
+print("Features that will be extracted will include: \n\t\n1. Word Tokens\t\n2. Dependency Parse Trees\t\n3. Lemmas - Based on Wordnet POS Tags and Words\t\n4. Lemmas - Based on Wordnet Words only\t\n5. POS Tags - NLTK Based\t\n6. Stemmas - NLTK Based\t\n7. Wordnet Features - Synonymns\t\n8. Wordnet Features - Holonymns\t\n9. Wordnet Features - Meronymns\t\n10. Wordnet Features - Hypernymns\t\n11. Wordnet Features - Hyponymns\t\n12. Wordnet Features - NER - Spacy Based\n")
 
 # Getting the features in each sentence - Loop Sentence by Sentence
-for sentence in sentences:
+for index,sentence in enumerate(sentences):
 
     # NLP Pipeline to extract all features - Sentence by Sentence
     word_tokens,pos_tagged,wordnet_tagged,stemma_list,lemmas,lemmas_wordnet,synonymn_list,hypernym_list,hyponym_list,meronym_list,holonym_list,dependency_parse_tree,ner_list = NLP_Feature_Pipeline(sentence,all_stopwords)
@@ -312,7 +317,6 @@ for sentence in sentences:
 # --------------------------------- Output Features -------------------------------------- #
 
 # Getting the File Name from the Path
-base = os.path.basename(input_file)
 output_file_name = os.path.splitext(base)[0]
 
 # Create the Features Folder with TextFile Folder
@@ -353,9 +357,12 @@ with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as 
     filehandle.writelines("%s\n" % place for place in ners_list)
 
 
-print('\n\nFeatures Found from the Text and Printed on Individual Files in the Features/'+output_file_name+' Folder')    
+print('\nFeatures Found from the Text File - "'+base+'" are Printed on Individual Files in the Features/'+output_file_name+' Folder')    
+
+print("-----------------------------------------------------------------------------------------------------------")
 # input('Press Any Key to move to Task 2')
 print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
+print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Organization)\n2. Acquire(Organization, Organization, Date)\n3. Born(Person/Organization, Date, Location)\n')
 
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
@@ -402,5 +409,6 @@ output_file.close()
 
 print('Output JSON for "' + base + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
 # input('Next?')
+print("-----------------------------------------------------------------------------------------------------------")
 
 print('\nTemplate Extraction Completed\n')
