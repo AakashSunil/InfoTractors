@@ -11,6 +11,7 @@ import json
 # NLTK Imports
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk import Tree
 
 try:
     nltk.data.find('tokenizers/punkt')
@@ -43,6 +44,7 @@ from spacy.tokens import Doc
 # Template Import
 from Part_Template import getPart
 from Aquire_Template import getAquire
+from Part_Template_ORG import getPartOrg
 
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
@@ -64,6 +66,7 @@ def sentence_tokenizer(text):
     read_text = read_text._.coref_resolved
     
     sentence_tokens = sent_tokenize(read_text)
+    
     return sentence_tokens
 
 # Words Extracted from a Sentence
@@ -252,6 +255,12 @@ all_stopwords = nlp.Defaults.stop_words
 # take out the 'not' stopword from the default list as not is an important stopword that can alter meaning if not included
 all_stopwords.remove('not')
 
+# Wordnet Lematizer Initialization
+lemmatizer = WordNetLemmatizer()
+
+# files_list = glob.glob('WikipediaArticles\*.txt')
+# for file_name in files_list:
+
 # Initialization of Lists - Words, POS_Tags, Wordnet Tagged and Lemmatized Sentence Lists
 words_list=[]
 pos_tag_list = []
@@ -266,10 +275,6 @@ meronyms_list = []
 holonyms_list = []
 dependency_parse_tree_list = []
 ners_list = []
-
-# Wordnet Lematizer Initialization
-lemmatizer = WordNetLemmatizer()
-
 # Text File Read
 text_data = file_read(input_file)
 
@@ -341,53 +346,54 @@ with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as 
     filehandle.writelines("%s\n" % place for place in ners_list)
 
 
-print('\n\nFeatures Found from the Text and Printed on Individual Files in the Features/'+output_file_name+' Folder')
-input('Press Any Key to move to Task 2')
+print('\n\nFeatures Found from the Text and Printed on Individual Files in the Features/'+output_file_name+' Folder')    
+# input('Press Any Key to move to Task 2')
 print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
 
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 
-files_list = glob.glob('WikipediaArticles\*.txt')
-for file_name in files_list:
-    
-    text_data = file_read(file_name)
-    sentences = sentence_tokenizer(text_data)
-    
-    output_part_template = getPart(sentences)
-    output_acquire_template = getAquire(sentences)
+# files_list = glob.glob('WikipediaArticles\*.txt')
+# for file_name in files_list:
+output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
+output_part_template = getPart(sentences,ners_list)
+# output_acquire_template = getAquire(sentences)
 
-    # Getting the File Name from the Path
-    base_name = os.path.basename(file_name)
-    output_file_name = os.path.splitext(base_name)[0]
+# # Getting the File Name from the Path
+# base_name = os.path.basename(input_file)
+# output_file_name = os.path.splitext(base_name)[0]
 
-    final_output_dictionary={}
-    final_output_dictionary["document"]=base_name
-    final_output_dictionary["extraction"]=[]
+final_output_dictionary={}
+final_output_dictionary["document"]=base
+final_output_dictionary["extraction"]=[]
 
-    for acquire_templates in output_acquire_template:
-        final_output_dictionary['extraction'].append(acquire_templates)
+# for acquire_templates in output_acquire_template:
+#     final_output_dictionary['extraction'].append(acquire_templates)
         
-    for part_templates in output_part_template:
-        final_output_dictionary['extraction'].append(part_templates)
+for part_templates in output_part_template:
+    final_output_dictionary['extraction'].append(part_templates)
 
-    # Create the Features Folder with TextFile Folder
-    try:
-        os.makedirs('Output_JSONs/')
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
+for part_templates_org in output_part_template_org:
+    final_output_dictionary['extraction'].append(part_templates_org)
+
+
+# Create the Features Folder with TextFile Folder
+try:
+    os.makedirs('Output_JSONs/')
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise
     
-    json_output_file_name = "Output_" + output_file_name + ".json"
-    json_object_output = json.loads(json.dumps(final_output_dictionary))
-    final_json_data = json.dumps(json_object_output, indent=2)
+json_output_file_name = "Output_" + output_file_name + ".json"
+json_object_output = json.loads(json.dumps(final_output_dictionary))
+final_json_data = json.dumps(json_object_output, indent=2)
 
-    output_file = open('Output_JSONs/'+json_output_file_name, "w")
-    output_file.write(final_json_data)
-    output_file.close()
+output_file = open('Output_JSONs/'+json_output_file_name, "w")
+output_file.write(final_json_data)
+output_file.close()
 
-    print('Output JSON for "' + base_name + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
-    # input('Next?')
+print('Output JSON for "' + base + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
+# input('Next?')
 
 print('\nTemplate Extraction Completed\n')
