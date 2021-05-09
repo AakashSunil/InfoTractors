@@ -37,7 +37,7 @@ import neuralcoref
 import spacy
 
 # Template Import
-from Part_Template import getPart
+from Part_Template_LOC import getPart
 from Aquire_Template import getAquire
 from Part_Template_ORG import getPartOrg
 
