@@ -11,7 +11,6 @@ import json
 # NLTK Imports
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk import Tree
 
 try:
     nltk.data.find('tokenizers/punkt')
@@ -36,10 +35,6 @@ from nltk.stem import PorterStemmer
 # SpaCy Imports
 import neuralcoref    
 import spacy
-from spacy.matcher import Matcher
-from spacy.pipeline import EntityRuler
-from spacy.tokens import Doc
-
 
 # Template Import
 from Part_Template import getPart
