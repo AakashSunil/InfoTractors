@@ -286,7 +286,7 @@ ners_list = []
 text_data = file_read(input_file)
 
 # Sentence Tokenizer
-sentences = file_read_sentence_tokenizer(text_data)
+sentences = sentence_tokenizer(text_data)
 
 # Getting the features in each sentence - Loop Sentence by Sentence
 for sentence in sentences:
