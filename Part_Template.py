@@ -21,13 +21,16 @@ def location_pattern(text):
   
     for entity in document.ents:
         if(entity.label_ == "GPE"):
-            if(index_next_char==-1 or index_next_char == entity.start_char):
+
+            if(index_next_char == -1 or index_next_char == entity.start_char):
                 text_selection.append(entity.text)
                 index_next_char = entity.end_char + 2
+
             elif(index_next_char > 0 and index_next_char + 3 < len(text) and (index_next_char + 3 == entity.start_char or index_next_char + 4 == entity.start_char) and (text[index_next_char - 1 : index_next_char + 2] == "and" or text[index_next_char : index_next_char + 3] == "and")):
                 text_selection.append("&")
                 text_selection.append(entity.text)
                 index_next_char = entity.end_char + 2
+
             else:
                 text_selection.append("#")
                 text_selection.append(entity.text)
@@ -37,9 +40,11 @@ def location_pattern(text):
   
     for i in range(len(text_selection)):
         if(text_selection[i] == "&"):
+
             remaining_list.append(i)
             remaining_list.append(i+1)
             j = i - 1
+
             while(j != 0 and text_selection[j+1] != "#"):
                 remaining_list.append(j)
                 j = j - 1
@@ -62,9 +67,8 @@ def location_pattern(text):
     return text_pattern
         
 def part_template_sentence_check(sentence,ner_sentence):
-    
+
     count = sum((x == 'GPE') for x in ner_sentence.values())
-    
     if(count>=2):
         return sentence
     
