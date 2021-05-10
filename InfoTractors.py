@@ -372,7 +372,7 @@ for file_name in files_list:
     # for file_name in files_list:
     output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
     output_part_template = getPart(sentences,ners_list)
-    # output_acquire_template = getAquire(sentences)
+    output_acquire_template = getAquire(sentences)
 
     # # Getting the File Name from the Path
     # base_name = os.path.basename(input_file)
@@ -382,8 +382,8 @@ for file_name in files_list:
     final_output_dictionary["document"]=base
     final_output_dictionary["extraction"]=[]
 
-    # for acquire_templates in output_acquire_template:
-    #     final_output_dictionary['extraction'].append(acquire_templates)
+    for acquire_templates in output_acquire_template:
+        final_output_dictionary['extraction'].append(acquire_templates)
             
     for part_templates in output_part_template:
         final_output_dictionary['extraction'].append(part_templates)
