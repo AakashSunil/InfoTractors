@@ -9,7 +9,6 @@ import spacy
 from spacy.pipeline import EntityRuler
 
 nlp = spacy.load('en_core_web_sm')
-
 ruler = EntityRuler(nlp)
 patterns = [{"label": "ACQUIRE", "pattern": "purchased"}, {"label": "ACQUIRE", "pattern": "purchased by"},
                 {"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},
@@ -19,16 +18,67 @@ patterns = [{"label": "ACQUIRE", "pattern": "purchased"}, {"label": "ACQUIRE", "
             {"label": "ACQUIRE", "pattern": "own"}]
 ruler.add_patterns(patterns)
 nlp.add_pipe(ruler)
-merge_nps = nlp.create_pipe("merge_noun_chunks")
-nlp.add_pipe(merge_nps)
+# merge_nps = nlp.create_pipe("merge_noun_chunks")
+# nlp.add_pipe(merge_nps)
 neuralcoref.add_to_pipe(nlp)
 
-
-def merge_entities(document):
-    with document.retokenize() as retokenizer:
-        for entity in document.ents:
-            retokenizer.merge(entity)
-    return document
+def extraction(doc):
+    template = {"buyer": "", "item": "", "price": "", "quantity": "", "source": ""}
+    list_of_templates = []
+    
+    # A BUY B for MONEY
+    for head in doc:
+        if(head.ent_type_=="ACQUIRE"):
+            for token in head.children:
+                if (token.dep_ == "nsubj"):
+                    template["buyer"] = token
+                if((token.pos_=="NOUN" and token.dep_ == "dobj")):
+                    template["item"] = token
+                    for j in token.children:
+                        if(j.dep_=="nummod"):
+                            template["quantity"]=j
+                elif (token.dep_ == "dobj"):
+                    template["item"] = token
+                for i in doc:
+                    if(i.ent_type_ == "MONEY"):
+                        if(head in list(i.ancestors)):
+                            template["price"] = i
+                    if(i.text.lower()=="from" or i.text.lower()=="of" or i.text.lower()=="in"):
+                        for j in i.children:
+                            if(j.pos_=="PROPN" and j.ent_type_!="GPE"):
+                                template["source"]=j
+                if (len(template["buyer"]) > 0 and len(template["item"]) > 0):
+                    list_of_templates.append(template)
+                    template = {"buyer": "", "item": "", "price": "", "quantity": "", "source": ""}
+    
+    # B was BUY by A for MONEY
+    
+    for head in doc:
+        if(head.ent_type_=="ACQUIRE"):
+            for token in head.children:
+                if((token.pos_=="NOUN" and token.dep_ == "nsubjpass")):
+                    template["item"] = token
+                    for j in token.children:
+                        if(j.dep_=="nummod"):
+                            template["quantity"]=j
+                elif ( token.dep_ == "nsubjpass"):
+                    template["item"] = token
+                if ( token.dep_ == "pobj" ):
+                    template["buyer"] = token
+                
+                for i in doc:
+                    if(i.ent_type_ == "MONEY"):
+                        if(head in list(i.ancestors)):
+                            template["price"] = i
+                    if(i.text.lower()=="from" or i.text.lower()=="of" or i.text.lower()=="in"):
+                        for j in i.children:
+                            if(j.pos_=="PROPN" and j.ent_type_!="GPE"):
+                                template["source"]=j
+                if (len(template["buyer"]) > 0 and len(template["item"]) > 0):
+                    list_of_templates.append(template)
+                    template = {"buyer": "", "item": "", "price": "", "quantity": "", "source": ""}
+    
+    return list_of_templates
 
 
 def getAquire(sentences):
@@ -65,62 +115,3 @@ def getAquire(sentences):
 
     return final_part
     
-def extraction(doc):
-    template = {"buyer": "", "item": "", "price": "", "quantity": "", "source": ""}
-    list_of_templates = []
-    
-    # A BUY B for MONEY
-    for head in doc:
-        if(head.ent_type_=="BUY"):
-            print(head)
-            for token in head.children:
-                if (token.dep_ == "nsubj"):
-                    template["buyer"] = token
-                if((token.pos_=="NOUN" and token.dep_ == "dobj")):
-                    template["item"] = token
-                    for j in token.children:
-                        if(j.dep_=="nummod"):
-                            template["quantity"]=j
-                elif (token.dep_ == "dobj"):
-                    template["item"] = token
-                for i in doc:
-                    if(i.ent_type_ == "MONEY"):
-                        if(head in list(i.ancestors)):
-                            template["price"] = i
-                    if(i.text.lower()=="from" or i.text.lower()=="of" or i.text.lower()=="in"):
-                        for j in i.children:
-                            if(j.pos_=="PROPN" and j.ent_type_!="GPE"):
-                                template["source"]=j
-                if (len(template["buyer"]) > 0 and len(template["item"]) > 0):
-                    list_of_templates.append(template)
-                    template = {"buyer": "", "item": "", "price": "", "quantity": "", "source": ""}
-    
-    # B was BUY by A for MONEY
-    
-    for head in doc:
-        if(head.ent_type_=="BUY"):
-            for token in head.children:
-                if((token.pos_=="NOUN" and token.dep_ == "nsubjpass")):
-                    template["item"] = token
-                    for j in token.children:
-                        if(j.dep_=="nummod"):
-                            template["quantity"]=j
-                elif ( token.dep_ == "nsubjpass"):
-                    template["item"] = token
-                if ( token.dep_ == "pobj" ):
-                    template["buyer"] = token
-                
-                for i in doc:
-                    if(i.ent_type_ == "MONEY"):
-                        if(head in list(i.ancestors)):
-                            template["price"] = i
-                    if(i.text.lower()=="from" or i.text.lower()=="of" or i.text.lower()=="in"):
-                        for j in i.children:
-                            if(j.pos_=="PROPN" and j.ent_type_!="GPE"):
-                                template["source"]=j
-                if (len(template["buyer"]) > 0 and len(template["item"]) > 0):
-                    list_of_templates.append(template)
-                    template = {"buyer": "", "item": "", "price": "", "quantity": "", "source": ""}
-    
-    return list_of_templates
-
