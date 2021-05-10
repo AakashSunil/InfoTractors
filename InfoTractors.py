@@ -372,7 +372,7 @@ print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Orga
 # for file_name in files_list:
 output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
 output_part_template = getPart(sentences,ners_list)
-output_acquire_template = getAquire(sentences)
+output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list)
 
 # # Getting the File Name from the Path
 # base_name = os.path.basename(input_file)
