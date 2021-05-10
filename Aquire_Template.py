@@ -29,8 +29,8 @@ def extraction(doc,ner_list,dp_list):
     template = {"Organization 1": "", "Organization 2": "", "Date": ""}
     list_of_templates = []
     temp_date=None
-    print(dp_list)
-    input('a')
+    # print(dp_list)
+    
     # print(ner_list)
     for head in doc:
         # for head_check in head:
