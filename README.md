@@ -22,10 +22,10 @@ The Folder of the Project consists the following
 
 1. Program (InfoTractors.py) to run the Tasks - Feature Extraction and Template Extraction.
 2. Individual Template Files.
-    a. Acquire_Template.py  - Acquire Template
-    b. Born_Template.py     - Born Template    
-    c. Part_Template_ORG.py - Part Template with Organizations
-    d. Part_Template_LOC.py - Part Template with Locations
+    1. Acquire_Template.py  - Acquire Template
+    2. Born_Template.py     - Born Template    
+    3. Part_Template_ORG.py - Part Template with Organizations
+    4. Part_Template_LOC.py - Part Template with Locations
 
 3. One folder with all text file articles.
 4. requirements.txt file to install the required packages
