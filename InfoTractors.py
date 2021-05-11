@@ -247,10 +247,6 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
 # ------------------------------------------- Task 1 - NLP Features from Input Text File --------------------------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 
-
-# Input from Command Line
-input_file = sys.argv[1]
-
 # Loading Spacy English Model 
 nlp = spacy.load('en_core_web_sm')
 ruler = EntityRuler(nlp)
@@ -366,7 +362,6 @@ for file_name in files_list:
     print('\nFeatures Found from the Text File - "'+base+'" are Printed on Individual Files in the Features/'+output_file_name+' Folder')    
 
     print("\n-----------------------------------------------------------------------------------------------------------")
-    # input('Press Any Key to move to Task 2')
     print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
     print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Organization)\n2. Acquire(Organization, Organization, Date)\n3. Born(Person/Organization, Date, Location)\n')
 
@@ -374,16 +369,10 @@ for file_name in files_list:
     # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
     # ------------------------------------------------------------------------------------------------------------------------------------ #
 
-    # files_list = glob.glob('WikipediaArticles\*.txt')
-    # for file_name in files_list:
     output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
     output_part_template = getPart(sentences,ners_list)
     output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list)
     output_born_template = getBorn(sentences,ners_list,dependency_parse_tree_list)
-
-    # # Getting the File Name from the Path
-    # base_name = os.path.basename(input_file)
-    # output_file_name = os.path.splitext(base_name)[0]
 
     final_output_dictionary={}
     final_output_dictionary["document"]=base
@@ -418,7 +407,6 @@ for file_name in files_list:
     output_file.close()
 
     print('Output JSON for "' + base + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
-    # input('Next?')
     print("\n-----------------------------------------------------------------------------------------------------------")
 
 print('\nTemplate Extraction Completed\n')
