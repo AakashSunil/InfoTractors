@@ -35,11 +35,13 @@ from nltk.stem import PorterStemmer
 # SpaCy Imports
 import neuralcoref    
 import spacy
+from spacy.pipeline import EntityRuler
 
 # Template Import
 from Part_Template_LOC import getPart
-from Aquire_Template import getAquire
+from Acquire_Template import getAquire
 from Part_Template_ORG import getPartOrg
+from Born_Template import getBorn
 
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
@@ -252,7 +254,10 @@ base = os.path.basename(input_file)
 
 # Loading Spacy English Model 
 nlp = spacy.load('en_core_web_sm')
-
+ruler = EntityRuler(nlp)
+patterns = [{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"}]
+ruler.add_patterns(patterns)
+nlp.add_pipe(ruler)
 # Adding the Neural Coreference Resolution to the Pipeline
 neuralcoref.add_to_pipe(nlp)
 
@@ -370,9 +375,10 @@ print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Orga
 
 # files_list = glob.glob('WikipediaArticles\*.txt')
 # for file_name in files_list:
-output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
-output_part_template = getPart(sentences,ners_list)
-output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list)
+# output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
+# output_part_template = getPart(sentences,ners_list)
+# output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list)
+output_born_template = getBorn(sentences,ners_list,dependency_parse_tree_list)
 
 # # Getting the File Name from the Path
 # base_name = os.path.basename(input_file)
@@ -382,14 +388,17 @@ final_output_dictionary={}
 final_output_dictionary["document"]=base
 final_output_dictionary["extraction"]=[]
 
-for acquire_templates in output_acquire_template:
-    final_output_dictionary['extraction'].append(acquire_templates)
+# for acquire_templates in output_acquire_template:
+    # final_output_dictionary['extraction'].append(acquire_templates)
         
-for part_templates in output_part_template:
-    final_output_dictionary['extraction'].append(part_templates)
+for born_templates in output_born_template:
+    final_output_dictionary['extraction'].append(born_templates)
 
-for part_templates_org in output_part_template_org:
-    final_output_dictionary['extraction'].append(part_templates_org)
+# for part_templates in output_part_template:
+    # final_output_dictionary['extraction'].append(part_templates)
+
+# for part_templates_org in output_part_template_org:
+    # final_output_dictionary['extraction'].append(part_templates_org)
 
 
 # Create the Features Folder with TextFile Folder
