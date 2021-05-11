@@ -11,7 +11,7 @@ from spacy.pipeline import EntityRuler
 
 nlp = spacy.load('en_core_web_sm')
 ruler = EntityRuler(nlp)
-patterns = [{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},]
+patterns = [{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"},]
 # {"label": "ACQUIRE", "pattern": "bought"}, {"label": "ACQUIRE", "pattern": "bought  by"},{"label": "ACQUIRE", "pattern": "took over"},{"label": "ACQUIRE", "pattern": "owns"},{"label": "ACQUIRE", "pattern": "owned"},{"label": "ACQUIRE", "pattern": "own"},{"label": "ACQUIRE", "pattern": "purchased"}, {"label": "ACQUIRE", "pattern": "purchased by"},]
 ruler.add_patterns(patterns)
 nlp.add_pipe(ruler)
@@ -26,6 +26,7 @@ neuralcoref.add_to_pipe(nlp)
 #     return False
 
 def extraction(doc,ner_list,dp_list):
+    
     template = {"Organization 1": "", "Organization 2": "", "Date": ""}
     list_of_templates = []
     temp_date=None
