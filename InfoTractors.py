@@ -35,11 +35,13 @@ from nltk.stem import PorterStemmer
 # SpaCy Imports
 import neuralcoref    
 import spacy
+from spacy.pipeline import EntityRuler
 
 # Template Import
 from Part_Template_LOC import getPart
-from Aquire_Template import getAquire
+from Acquire_Template import getAquire
 from Part_Template_ORG import getPartOrg
+from Born_Template import getBorn
 
 # --------------- File Read from Text --------------------- #
 # Read the whole Text File into a variable
@@ -245,14 +247,12 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
 # ------------------------------------------- Task 1 - NLP Features from Input Text File --------------------------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 
-
-# Input from Command Line
-input_file = sys.argv[1]
-base = os.path.basename(input_file)
-
 # Loading Spacy English Model 
 nlp = spacy.load('en_core_web_sm')
-
+ruler = EntityRuler(nlp)
+patterns = [{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"}]
+ruler.add_patterns(patterns)
+nlp.add_pipe(ruler)
 # Adding the Neural Coreference Resolution to the Pipeline
 neuralcoref.add_to_pipe(nlp)
 
@@ -265,8 +265,9 @@ all_stopwords.remove('not')
 # Wordnet Lematizer Initialization
 lemmatizer = WordNetLemmatizer()
 
-# files_list = glob.glob('WikipediaArticles\*.txt')
-# for file_name in files_list:
+# File Input from Command Line
+file_name = sys.argv[1]
+base = os.path.basename(file_name)
 
 # Initialization of Lists - Words, POS_Tags, Wordnet Tagged and Lemmatized Sentence Lists
 words_list=[]
@@ -287,7 +288,7 @@ print("-------------------------------------------------------------------------
 print('\nStarting Task 1 - Feature Extraction from Text File - '+base+'\n')
 
 # Read text File into a variable
-text_data = file_read(input_file)
+text_data = file_read(file_name)
 
 # Sentence Tokenizer
 sentences = sentence_tokenizer(text_data)
@@ -360,7 +361,6 @@ with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as 
 print('\nFeatures Found from the Text File - "'+base+'" are Printed on Individual Files in the Features/'+output_file_name+' Folder')    
 
 print("\n-----------------------------------------------------------------------------------------------------------")
-# input('Press Any Key to move to Task 2')
 print('\nStarting Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods\n')
 print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Organization)\n2. Acquire(Organization, Organization, Date)\n3. Born(Person/Organization, Date, Location)\n')
 
@@ -368,15 +368,10 @@ print('Three Templates: \n1. Part(Location, Location) or Part(Organization, Orga
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 
-# files_list = glob.glob('WikipediaArticles\*.txt')
-# for file_name in files_list:
 output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
 output_part_template = getPart(sentences,ners_list)
 output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list)
-
-# # Getting the File Name from the Path
-# base_name = os.path.basename(input_file)
-# output_file_name = os.path.splitext(base_name)[0]
+output_born_template = getBorn(sentences,ners_list,dependency_parse_tree_list)
 
 final_output_dictionary={}
 final_output_dictionary["document"]=base
@@ -384,7 +379,10 @@ final_output_dictionary["extraction"]=[]
 
 for acquire_templates in output_acquire_template:
     final_output_dictionary['extraction'].append(acquire_templates)
-        
+            
+for born_templates in output_born_template:
+    final_output_dictionary['extraction'].append(born_templates)
+
 for part_templates in output_part_template:
     final_output_dictionary['extraction'].append(part_templates)
 
@@ -398,7 +396,7 @@ try:
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
-    
+        
 json_output_file_name = "Output_" + output_file_name + ".json"
 json_object_output = json.loads(json.dumps(final_output_dictionary))
 final_json_data = json.dumps(json_object_output, indent=2)
@@ -408,7 +406,6 @@ output_file.write(final_json_data)
 output_file.close()
 
 print('Output JSON for "' + base + '" created in the Output_JSONs Folder - File Name: ' + json_output_file_name)
-# input('Next?')
 print("\n-----------------------------------------------------------------------------------------------------------")
 
 print('\nTemplate Extraction Completed\n')
