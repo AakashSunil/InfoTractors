@@ -77,10 +77,7 @@ def part_template_sentence_check(sentence,ner_sentence):
 def part_home(sentence):
     
     combined_output=set()
-    
     combined_output.update(location_pattern(sentence))
-    # combined_output.update(holonymn_pattern(sentence))
-    
     combined_output = list(combined_output)
     
     return combined_output
