@@ -20,11 +20,18 @@ Before Starting the code run the requirements text file to install required pack
 
 The Folder of the Project consists the following
 
-1. Program (InfoTractors.py) to run the Tasks - Feature Extraction and Template Extraction
-2. One folder with all text file articles.
-3. requirements.txt file to install the required packages
-4. Readme File containing how to run the program.
-5. A sample JSON File which contains the sample output.
+1. Program (InfoTractors.py) to run the Tasks - Feature Extraction and Template Extraction.
+2. Individual Template Files.
+    a. Acquire_Template.py  - Acquire Template
+    b. Born_Template.py     - Born Template    
+    c. Part_Template_ORG.py - Part Template with Organizations
+    d. Part_Template_LOC.py - Part Template with Locations
+
+3. One folder with all text file articles.
+4. requirements.txt file to install the required packages
+5. Readme File containing how to run the program.
+6. A sample JSON File which contains the sample output.
+7. .gitignore file - to choose the files that will be uploaded to the repositories
 
 Program Name: InfoTractors.py
 To run the code
