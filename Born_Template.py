@@ -43,6 +43,7 @@ def extraction(sentence,doc,ner_list,dp_list):
                 cur_token = [token.dep_,token.head.text,token.text,token.pos_]
 
             if(head.ent_type_=="BORN"):
+                print(ner_list)
                 count_loc = sum((x == 'GPE') for x in ner_list.values())
                 count_date = sum((x == 'DATE') for x in ner_list.values())
                 for index,x in enumerate(ner_list):
@@ -63,7 +64,8 @@ def extraction(sentence,doc,ner_list,dp_list):
                     
                     if(count_loc > 1 and x.label_ == "GPE"):
                         loc = list(location_pattern(sentence))
-                        template["Location"] = str(loc[0][0])+", "+ str(loc[0][1])
+                        if(len(loc)>0):
+                            template["Location"] = str(loc[0][0])+", "+ str(loc[0][1])
                     elif(count_loc == 1 and x.label_ == "GPE"):
                         template["Location"] = x.text
 
