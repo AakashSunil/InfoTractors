@@ -42,7 +42,7 @@ nlp = spacy.load('en_core_web_sm')
 ruler = EntityRuler(nlp)
 
 # Patterns to Identify Born and Acquire Templates
-patterns = [{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"}]    
+patterns = [{"label": "PART_OF", "pattern": "part of"},{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"}]    
 
 # Adding the Patterns to the EntityRuler
 ruler.add_patterns(patterns)

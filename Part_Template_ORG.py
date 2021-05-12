@@ -5,9 +5,21 @@ import re
 # SpaCy Imports
 import neuralcoref    
 import spacy
+from spacy.pipeline import EntityRuler
 
 nlp = spacy.load('en_core_web_sm')
-neuralcoref.add_to_pipe(nlp)
+# Entity Ruler to add Patterns
+ruler = EntityRuler(nlp)
+
+# Patterns to Identify Born Templates
+patterns = [{"label": "PART_OF", "pattern": "part of"}]
+
+# Adding the Patterns to the EntityRuler
+ruler.add_patterns(patterns)
+
+# Adding the Pipe to the NLP Pipeline
+nlp.add_pipe(ruler)
+
 
 def part_of_relation_check(sentence):
     if(re.search("part of", sentence)):
@@ -24,59 +36,50 @@ def to_nltk_tree(node):
     else:
         return tok_format(node)
     
-def organization_pattern(text):
+def organization_pattern(text,ners,dp):
 
     doc = nlp(text)
-  
-    text_selection = []
-    index_next_char = -1
-  
-    for entity in doc.ents:
-        if(entity.label_ == "ORG"):
 
-            if(index_next_char == -1 or index_next_char == entity.start_char):
-                text_selection.append(entity.text)
-                index_next_char = entity.end_char + 2
+    template = {"Organization 1": "", "Organization 2": ""}
+    list_of_templates = []
+  
+    temp_org = None
+    for entity in doc:
 
-            elif(index_next_char > 0 and index_next_char + 3 < len(text) and (index_next_char + 3 == entity.start_char or index_next_char + 4 == entity.start_char) and (text[index_next_char - 1 : index_next_char + 2] == "and" or text[index_next_char : index_next_char + 3] == "and")):
-                text_selection.append("&")
-                text_selection.append(entity.text)
-                index_next_char = entity.end_char + 2
+        if(entity.ent_type_ == "PART_OF"):
 
-            else:
-                text_selection.append("#")
-                text_selection.append(entity.text)
-                index_next_char = entity.end_char + 2
-  
-    remaining_list = []
-  
-    for i in range(len(text_selection)):
-        if(text_selection[i] == "&"):
+            for index,x in enumerate(ners):
+                
+                if(x.label_ == "ORG"):
+                    temp_org = x.text
+                
+                if(template["Organization 1"] != ""):
+                    if(x.label_ == "ORG"):
+                        template["Organization 2"] = x.text
 
-            remaining_list.append(i)
-            remaining_list.append(i+1)
-            j = i - 1
+                # Keeping track of current and previous tokens in NER List
+                if index == 0:
+                    prev_token = [x.label_,x.text]
+                    cur_token = [x.label_,x.text]
+                else:
+                    prev_token = cur_token
+                    cur_token = [x.label_,x.text]
+                # Pattern Matching through RE and comparison with NER for first parameter of template
+                if(re.search("(part of)", cur_token[1])):
+                    if(prev_token[0]=="ORG"):
+                        template["Organization 1"] = prev_token[1]
+                    else:
+                        template["Organization 1"] = temp_org
 
-            while(j != 0 and text_selection[j+1] != "#"):
-                remaining_list.append(j)
-                j = j - 1
-  
-    remaining_list = list(dict.fromkeys(remaining_list))
-  
-    for index in sorted(remaining_list, reverse=True):
-        del text_selection[index]
-  
-    text_pattern = []
-    temp_tuple_pattern = ()
-  
-    for i in (range(len(text_selection)-1)):
-        if(text_selection[i+1] == "#" or text_selection[i] == "#"):
-            continue
-        else:
-            temp_tuple_pattern = (text_selection[i],text_selection[i+1])
-            text_pattern.append(temp_tuple_pattern)
-  
-    return text_pattern
+    print(template)
+    # Template Selection if both Parameter and Date are found as the minimum base case
+    if (len(template["Organization 1"]) > 0 and len(template["Organization 2"]) > 0):
+        list_of_templates.append(template)
+        
+        # Reinitialization for new sentences
+        template = {"Organization 1": "", "Organization 2": ""}
+    print(list_of_templates)
+    return list_of_templates
 
 def part_template_sentence_check(sentence,ner_sentence):
 
@@ -94,9 +97,9 @@ def display_tree(sentence):
     doc = nlp(sentence)
     [to_nltk_tree(sent.root).pretty_print() for sent in doc.sents]
 
-def part_home(sentence):
+def part_home(sentence,ners,dp):
     combined_output=set()
-    combined_output.update(organization_pattern(sentence))
+    combined_output.update(organization_pattern(sentence,ners,dp))
     combined_output = list(combined_output)
     return combined_output
 
@@ -105,6 +108,7 @@ def getPartOrg(sentences,ners_list,dependency_parse_list):
     final_part = []
     selected_sentences_list = []
     selected_sentences_dependency_parse_structure = []
+    selected_sentences_ners = []
 
     for index,sentence in enumerate(sentences):
         output_sentence = part_template_sentence_check(sentence,ners_list[index])
@@ -112,28 +116,30 @@ def getPartOrg(sentences,ners_list,dependency_parse_list):
             continue
         else:
             selected_sentences_dependency_parse_structure.append(dependency_parse_list[index])
+            selected_sentences_ners.append(ners_list[index])
             selected_sentences_list.append(output_sentence)
 
-    # for sentence in selected_sentences_list:
-    #     try:
+    for index,sentence in enumerate(selected_sentences_list):
+        try:
 
-    #         part_output = part_home(sentence)
+            part_output = organization_pattern(sentence,selected_sentences_ners[index],selected_sentences_dependency_parse_structure[index])
 
-    #         if(part_output != []):
-    #             for j in part_output:
-    #                 temp_dict ={}
-    #                 temp_dict["template"] ="PART"
-    #                 temp_dict["sentences"] = []
-    #                 temp_dict["sentences"].append(sentence)
-    #                 temp_dict["arguments"] = {}
-    #                 temp_dict["arguments"]["1"] = j[0]
-    #                 temp_dict["arguments"]["2"] = j[1]
-    #                 final_part.append(temp_dict)
+            if(part_output != []):
+                print(part_output)
+                for j in part_output:
+                    temp_dict ={}
+                    temp_dict["template"] ="PART_OF"
+                    temp_dict["sentences"] = []
+                    temp_dict["sentences"].append(sentence)
+                    temp_dict["arguments"] = {}
+                    temp_dict["arguments"]["1"] = j["Organization 1"]
+                    temp_dict["arguments"]["2"] = j["Organization 2"]
+                    final_part.append(temp_dict)
         
-    #     except:
-    #         continue    
+        except:
+            continue    
 
-    final_part = selected_sentences_list
+    # final_part = selected_sentences_list
     
     
     # for sentence in selected_sentences_list:

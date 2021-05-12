@@ -38,6 +38,7 @@ To run the code
 
     1. To run only one file run the following the command format   
         python InfoTractors.py Amazon_com.txt
+        
     2. To run multiple files at a time run the following command format
         python InfoTractors.py
     

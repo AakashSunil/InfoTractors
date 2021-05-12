@@ -145,7 +145,7 @@ def getPart(sentences,ner_list):
 
                     # Formatting of the Part(Location,Location) Template
                     temp_dict ={}
-                    temp_dict["template"] ="PART"
+                    temp_dict["template"] ="PART_OF"
                     temp_dict["sentences"] = []
                     temp_dict["sentences"].append(sentence)
                     temp_dict["arguments"] = {}
