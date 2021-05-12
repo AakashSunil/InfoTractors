@@ -71,14 +71,14 @@ def organization_pattern(text,ners,dp):
                     else:
                         template["Organization 1"] = temp_org
 
-    print(template)
+    # print(template)
     # Template Selection if both Parameter and Date are found as the minimum base case
     if (len(template["Organization 1"]) > 0 and len(template["Organization 2"]) > 0):
         list_of_templates.append(template)
         
         # Reinitialization for new sentences
         template = {"Organization 1": "", "Organization 2": ""}
-    print(list_of_templates)
+    # print(list_of_templates)
     return list_of_templates
 
 def part_template_sentence_check(sentence,ner_sentence):
@@ -125,7 +125,7 @@ def getPartOrg(sentences,ners_list,dependency_parse_list):
             part_output = organization_pattern(sentence,selected_sentences_ners[index],selected_sentences_dependency_parse_structure[index])
 
             if(part_output != []):
-                print(part_output)
+                # print(part_output)
                 for j in part_output:
                     temp_dict ={}
                     temp_dict["template"] ="PART_OF"
@@ -139,24 +139,5 @@ def getPartOrg(sentences,ners_list,dependency_parse_list):
         except:
             continue    
 
-    # final_part = selected_sentences_list
-    
-    
-    # for sentence in selected_sentences_list:
-    #     try:
-    #         part_output = part_home(sentence)
-    #         # print(part_output)
-    #         if(part_output != []):
-    #             for j in part_output:
-    #                 temp_dict ={}
-    #                 temp_dict["template"] ="PART"
-    #                 temp_dict["sentences"] = []
-    #                 temp_dict["sentences"].append(sentence)
-    #                 temp_dict["arguments"] = {}
-    #                 temp_dict["arguments"]["1"] = j[0]
-    #                 temp_dict["arguments"]["2"] = j[1]
-    #                 final_part.append(temp_dict)
-    #     except:
-    #         continue    
-    # print(final_part)
+   
     return final_part
