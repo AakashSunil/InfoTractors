@@ -1,12 +1,9 @@
 # NLP - Information Extraction Templates
 
 # Basic Imports
-import sys
 from itertools import chain
 import os
 import errno
-import glob
-import json
 
 # NLTK Imports
 import nltk
