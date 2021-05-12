@@ -32,9 +32,8 @@ The Folder of the Project consists the following
 3. One folder with all text file articles.
 4. requirements.txt file to install the required packages
 5. Readme File containing how to run the program.
-6. A sample JSON File which contains the sample output.
-7. .gitignore file - to choose the files that will be uploaded to the repositories
-8. Project Report - PDF and Word Format
+6. .gitignore file - to choose the files that will be uploaded to the repositories
+7. Project Report - PDF
 
 Program Name: InfoTractors.py
 To run the code
