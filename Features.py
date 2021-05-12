@@ -37,15 +37,25 @@ from spacy.pipeline import EntityRuler
 
 # Loading Spacy English Model 
 nlp = spacy.load('en_core_web_sm')
+
+# Entity Ruler to add Patterns
 ruler = EntityRuler(nlp)
+
+# Patterns to Identify Born and Acquire Templates
 patterns = [{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"}]    
+
+# Adding the Patterns to the EntityRuler
 ruler.add_patterns(patterns)
+
+# Adding the Pipe to the NLP Pipeline
 nlp.add_pipe(ruler)
+
 # Adding the Neural Coreference Resolution to the Pipeline
 neuralcoref.add_to_pipe(nlp)
 
 # Stopwords using the Spacy package
 all_stopwords = nlp.Defaults.stop_words
+
 # take out the 'not' stopword from the default list as not is an important stopword that can alter meaning if not included
 all_stopwords.remove('not')
 
@@ -59,13 +69,8 @@ def file_read(text):
     lines = f.readlines()
     sentences = ''
     for line in lines:
-        # print(line)
         if line.find('  ') == 0 or '\t' in line:
-            # print(True)
             sentences = sentences + line.strip() + "\n"
-            # print(sentences)
-            # input("s")
-
         else:
             sentences = sentences + line
         
@@ -115,6 +120,7 @@ def wordNet_pos_tagger(nltk_tag):
     else:          
         return None
 
+# Word Stemmatization NLTK Based - to find of Stemmas of the Words
 def word_stemmatization(words):       
     stemmatize_word = {}
     ps = PorterStemmer()
@@ -122,6 +128,7 @@ def word_stemmatization(words):
         stemmatize_word[word] = ps.stem(word)
     return stemmatize_word
 
+# Dependency Parsing on the Sentence - to find the dependency in words, tags and the tree structure of the sentence
 def dependency_parsing(sentence):
     dependency_parsed_tree =[]
     doc = nlp(sentence)
@@ -132,6 +139,7 @@ def dependency_parsing(sentence):
         dependency_parsed_tree.append([token.dep_,token.head.text,token.text])
     return dependency_parsed_tree
 
+# Named Entity Recognition Function to extract entities based on patterns- Both In-Built and Custom
 def named_entity_recognition(sentence):
     ner = {}
     doc = nlp(sentence)
@@ -141,6 +149,7 @@ def named_entity_recognition(sentence):
         
     return ner
 
+# Wordnet Features - Synonymns, Hypernymns, Hyponymns, Meronymns, Holonymns
 def wordnet_features(words):
 
     # Initializtion of the Wordnet Features Dictionaries
@@ -186,6 +195,7 @@ def wordnet_features(words):
 
     return synonymns,hypernyms,hyponyms,meronyms,holonyms
 
+# Lemmatization of Words
 def lemmatization(word_tokens):
     
     # Initializtion of Lemmas based on Word Tokens (NLTK)
@@ -198,6 +208,7 @@ def lemmatization(word_tokens):
     
     return lemmas
 
+# Lemmatization of Words - with regard to the Wordnet tgged words
 def lemmatization_wordnet(wordnet_tagged):
 
     # Initializtion of Lemmas basd on Wordnet Tagged Words
@@ -214,12 +225,12 @@ def lemmatization_wordnet(wordnet_tagged):
     
     return lemmas_wordnet
 
+# Creation of the Feature Pipeline for NLP
 def NLP_Feature_Pipeline(sentence,all_stopwords):
 
     # Word Tokens from the Sentence without Stop Words
-
-    # word_tokens = [word for word in word_tokenizer(sentence) if not word in all_stopwords]
-    word_tokens = word_tokenizer(sentence)
+    word_tokens = [word for word in word_tokenizer(sentence) if not word in all_stopwords]
+    # word_tokens = word_tokenizer(sentence)
 
     # Dependency Parsing Tree
     d_parse = dependency_parsing(sentence)
@@ -248,16 +259,12 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
     return word_tokens,pos_tagged,wordnet_tagged,stemmas,lemmas,lemmas_wordnet,syn,hyper,hypo,mero,holo,d_parse,ner
 
 
+# ------------------------------------------------------------------------------------------------------------------------------------ #
+# ------------------------------------------- Task 1 - NLP Features from Input Text File --------------------------------------------- #
+# ------------------------------------------------------------------------------------------------------------------------------------ #
 def Features_Extraction(file_name):
 
-    # ------------------------------------------------------------------------------------------------------------------------------------ #
-    # ---------------------------------------------------- Main Program---Driver Code ---------------------------------------------------- #
-    # ------------------------------------------- Task 1 - NLP Features from Input Text File --------------------------------------------- #
-    # ------------------------------------------------------------------------------------------------------------------------------------ #
-
-
-    # File Input from Command Line
-    # file_name = sys.argv[1]
+    # To obtain the File Name from the path
     base = os.path.basename(file_name)
 
     # Initialization of Lists - Words, POS_Tags, Wordnet Tagged and Lemmatized Sentence Lists
@@ -306,7 +313,7 @@ def Features_Extraction(file_name):
         dependency_parse_tree_list.append(dependency_parse_tree)
         ners_list.append(ner_list)
 
-    # --------------------------------- Output Features -------------------------------------- #
+    # --------------------------------- Output the Extracted Features -------------------------------------- #
 
     # Getting the File Name from the Path
     output_file_name = os.path.splitext(base)[0]
@@ -329,11 +336,8 @@ def Features_Extraction(file_name):
         filehandle.writelines("%s\n" % place for place in lemmas_list)
     with open('Features/'+output_file_name+'/'+output_file_name+'_Lemmas_WordNet.txt', 'w') as filehandle:
         filehandle.writelines("%s\n" % place for place in lemmas_wordnet_list)
-
     with open('Features/'+output_file_name+'/'+output_file_name+'_Dependency_Parse_Tree.txt', 'w') as filehandle:
         filehandle.writelines("%s\n" % place for place in dependency_parse_tree_list)
-
-
     with open('Features/'+output_file_name+'/'+output_file_name+'_synonyms.txt', 'w') as filehandle:
         filehandle.writelines("%s\n" % place for place in synonymns_list)
     with open('Features/'+output_file_name+'/'+output_file_name+'_hypernymns.txt', 'w') as filehandle:
@@ -344,13 +348,10 @@ def Features_Extraction(file_name):
         filehandle.writelines("%s\n" % place for place in meronyms_list)
     with open('Features/'+output_file_name+'/'+output_file_name+'_holonymns.txt', 'w') as filehandle:
         filehandle.writelines("%s\n" % place for place in holonyms_list)
-
     with open('Features/'+output_file_name+'/'+output_file_name+'_NER.txt', 'w') as filehandle:
         filehandle.writelines("%s\n" % place for place in ners_list)
 
-
-    print('\nFeatures Found from the Text File - "'+base+'" are Printed on Individual Files in the Features/'+output_file_name+' Folder')    
-
+    print('\nFeatures Found from the Text File - "' + base + '" are Printed on Individual Files in the Features/' + output_file_name + ' Folder')    
     print("\n-----------------------------------------------------------------------------------------------------------")
 
     return sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list

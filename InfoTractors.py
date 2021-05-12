@@ -5,7 +5,7 @@ import sys
 import glob
 
 from Features import Features_Extraction
-from Template_Extraction import task_2_template_extraction
+from Templates import Template_Extraction
 
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 # ------------------------------------------------ Task 3 - Main Program---Driver Code ----------------------------------------------- #
@@ -24,7 +24,7 @@ if(len(sys.argv) < 2):
         # ------------------------------------------------------------------------------------------------------------------------------------ #
         # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
         # ------------------------------------------------------------------------------------------------------------------------------------ #
-        task_2_template_extraction(sentences,dependency_parse_tree_list,ners_list,file_name)
+        Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name)
 
 else:
 
@@ -38,7 +38,7 @@ else:
     # ------------------------------------------------------------------------------------------------------------------------------------ #
     # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
     # ------------------------------------------------------------------------------------------------------------------------------------ #
-    task_2_template_extraction(sentences,dependency_parse_tree_list,ners_list,file_name)
+    Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name)
 
 
 print('\nTemplate Extraction Completed\n')

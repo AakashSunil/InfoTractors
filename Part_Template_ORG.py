@@ -27,12 +27,11 @@ def to_nltk_tree(node):
 def organization_pattern(text):
 
     doc = nlp(text)
-    document = merge_entities(doc)
   
     text_selection = []
     index_next_char = -1
   
-    for entity in document.ents:
+    for entity in doc.ents:
         if(entity.label_ == "ORG"):
 
             if(index_next_char == -1 or index_next_char == entity.start_char):

@@ -36,8 +36,11 @@ The Folder of the Project consists the following
 Program Name: InfoTractors.py
 To run the code
 
-    python InfoTractors.py Amazon_com.txt
-
+    1. To run only one file run the following the command format   
+        python InfoTractors.py Amazon_com.txt
+    2. To run multiple files at a time run the following command format
+        python InfoTractors.py
+    
 Expected Output -->
 1. One New Folder named 'Features' is created inside which a individual articles have thier respective folders with individual text files for different types of features
 2. An Output JSON File with identified templates as per the Sample JSON File Stored in another Folder named 'Output_JSONs'
