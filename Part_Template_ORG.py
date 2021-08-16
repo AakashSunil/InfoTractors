@@ -8,21 +8,36 @@ import spacy
 from spacy.pipeline import EntityRuler
 
 nlp = spacy.load('en_core_web_sm')
-# Entity Ruler to add Patterns
-ruler = EntityRuler(nlp)
 
-# Patterns to Identify Born Templates
+# Adding the Neural Coreference Resolution to the Pipeline
+neuralcoref.add_to_pipe(nlp)
+
 patterns = [{"label": "PART_OF", "pattern": "part of"}]
 
-# Adding the Patterns to the EntityRuler
-ruler.add_patterns(patterns)
+def patternRuler(patterns_to_add):
+    
+    for word in patterns_to_add:
+        patterns.append({"label": "PART_OF", "pattern": word})
+    
+    temp = ""
+    for index,word in enumerate(patterns):
+        if(index == len(patterns)-1):
+             temp += word["pattern"]
+        else:
+            temp += word["pattern"] + "|"
 
-# Adding the Pipe to the NLP Pipeline
-nlp.add_pipe(ruler)
+    # Entity Ruler to add Patterns
+    ruler = EntityRuler(nlp)
+    # Adding the Patterns to the EntityRuler
+    ruler.add_patterns(patterns)
 
+    # Adding the Pipe to the NLP Pipeline
+    nlp.add_pipe(ruler)
+                    
+    return temp
 
-def part_of_relation_check(sentence):
-    if(re.search("part of", sentence)):
+def part_of_relation_check(sentence,search_str):
+    if(re.search(search_str, sentence)):
         return True
     return False
 
@@ -36,7 +51,7 @@ def to_nltk_tree(node):
     else:
         return tok_format(node)
     
-def organization_pattern(text,ners,dp):
+def organization_pattern(text,ners,dp,search_str):
 
     doc = nlp(text)
 
@@ -65,7 +80,7 @@ def organization_pattern(text,ners,dp):
                     prev_token = cur_token
                     cur_token = [x.label_,x.text]
                 # Pattern Matching through RE and comparison with NER for first parameter of template
-                if(re.search("(part of)", cur_token[1])):
+                if(re.search(search_str, cur_token[1])):
                     if(prev_token[0]=="ORG"):
                         template["Organization 1"] = prev_token[1]
                     else:
@@ -103,8 +118,12 @@ def part_home(sentence,ners,dp):
     combined_output = list(combined_output)
     return combined_output
 
-def getPartOrg(sentences,ners_list,dependency_parse_list):
+def getPartOrg(sentences,ners_list,dependency_parse_list,part_syn):
     
+    temp_search_string = patternRuler(part_syn)
+    search_string = ""
+    search_string += "(" + temp_search_string + ")"
+
     final_part = []
     selected_sentences_list = []
     selected_sentences_dependency_parse_structure = []
@@ -122,7 +141,7 @@ def getPartOrg(sentences,ners_list,dependency_parse_list):
     for index,sentence in enumerate(selected_sentences_list):
         try:
 
-            part_output = organization_pattern(sentence,selected_sentences_ners[index],selected_sentences_dependency_parse_structure[index])
+            part_output = organization_pattern(sentence,selected_sentences_ners[index],selected_sentences_dependency_parse_structure[index],search_string)
 
             if(part_output != []):
                 # print(part_output)

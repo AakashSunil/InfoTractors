@@ -12,7 +12,7 @@ from Born_Template import getBorn
 # ------------------------------------------------------------------------------------------------------------------------------------ #
 # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
 # ------------------------------------------------------------------------------------------------------------------------------------ #
-def Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name):
+def Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name,born_syn,acquire_syn,part_syn):
 
     # To obtain the File Name from the path
     base = os.path.basename(file_name)
@@ -23,16 +23,16 @@ def Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name
     # # Individual Template Extraction
     
     # Part(Organization,Organization)
-    output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list)
+    output_part_template_org = getPartOrg(sentences,ners_list,dependency_parse_tree_list,part_syn)
 
     # Part(Location,Location)
     output_part_template = getPart(sentences,ners_list)
 
     # Acquire(Organization, Organization, Date)
-    output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list)
+    output_acquire_template = getAquire(sentences,ners_list,dependency_parse_tree_list,acquire_syn)
 
     # Born(Person/Organization, Date, Location)
-    output_born_template = getBorn(sentences,ners_list,dependency_parse_tree_list)
+    output_born_template = getBorn(sentences,ners_list,dependency_parse_tree_list,born_syn)
 
     # Final Output for Template
     final_output_dictionary={}

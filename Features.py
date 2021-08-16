@@ -41,8 +41,27 @@ nlp = spacy.load('en_core_web_sm')
 # Entity Ruler to add Patterns
 ruler = EntityRuler(nlp)
 
+born_synonyms = ['born','founded','founder']
+temp_born_synonyms = []
+acquire_synonyms = ['acquired','acquires','acquire']
+temp_acquire_synonymns = []
+part_of_synonyms = ['part']
+temp_part_synonymns = []
+
 # Patterns to Identify Born and Acquire Templates
-patterns = [{"label": "PART_OF", "pattern": "part of"},{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},{"label": "ACQUIRE", "pattern": "has been acquired by"},{"label": "ACQUIRE", "pattern": "acquired by"},{"label": "ACQUIRE", "pattern": "acquires"}]    
+patterns = [
+    {"label": "PART_OF", "pattern": "part of"},
+    {"label": "BORN", "pattern": "founded by"}, 
+    {"label": "BORN", "pattern": "founded on"}, 
+    {"label": "BORN", "pattern": "born on"},
+    {"label": "BORN", "pattern": "founder of"},
+    {"label": "ACQUIRE", "pattern": "acquired by"}, 
+    {"label": "ACQUIRE", "pattern": "acquired"},
+    {"label": "ACQUIRE", "pattern": "acquire"},
+    {"label": "ACQUIRE", "pattern": "has been acquired by"},
+    {"label": "ACQUIRE", "pattern": "acquired by"},
+    {"label": "ACQUIRE", "pattern": "acquires"}]    
+
 
 # Adding the Patterns to the EntityRuler
 ruler.add_patterns(patterns)
@@ -58,6 +77,9 @@ all_stopwords = nlp.Defaults.stop_words
 
 # take out the 'not' stopword from the default list as not is an important stopword that can alter meaning if not included
 all_stopwords.remove('not')
+all_stopwords.remove('by')
+all_stopwords.remove('of')
+all_stopwords.remove('on')
 
 # Wordnet Lematizer Initialization
 lemmatizer = WordNetLemmatizer()
@@ -146,7 +168,6 @@ def named_entity_recognition(sentence):
     for X in doc.ents:
         key_entities = ''.join(map(str, X.text))
         ner[X] = X.label_
-        
     return ner
 
 # Wordnet Features - Synonymns, Hypernymns, Hyponymns, Meronymns, Holonymns
@@ -238,6 +259,26 @@ def NLP_Feature_Pipeline(sentence,all_stopwords):
     # Wordnet Features - Synonymns, Hypernymns, Hyponymns, Meronymns, Holonymns
     syn,hyper,hypo,mero,holo = wordnet_features(word_tokens)
 
+
+    # Specific Patterns for the templates
+    for word in syn:
+
+        if(word in born_synonyms):
+            for syn_word in syn[word]:
+                if(syn_word not in temp_born_synonyms):
+                    temp_born_synonyms.append(syn_word)
+        
+        if(word in acquire_synonyms):
+            for syn_word in syn[word]:
+                if(syn_word not in temp_acquire_synonymns):
+                    temp_acquire_synonymns.append(syn_word)
+        
+        if(word in part_of_synonyms):
+            for syn_word in syn[word]:
+                if(syn_word not in temp_part_synonymns):
+                    temp_part_synonymns.append(syn_word)
+        
+            
     # Stemmatization
     stemmas = word_stemmatization(word_tokens)
 
@@ -315,6 +356,15 @@ def Features_Extraction(file_name):
 
     # --------------------------------- Output the Extracted Features -------------------------------------- #
 
+    for word in temp_acquire_synonymns:
+        acquire_synonyms.append(word)
+    
+    for word in temp_born_synonyms:
+        born_synonyms.append(word)
+    
+    for word in temp_part_synonymns:
+        part_of_synonyms.append(word)
+
     # Getting the File Name from the Path
     output_file_name = os.path.splitext(base)[0]
 
@@ -354,4 +404,4 @@ def Features_Extraction(file_name):
     print('\nFeatures Found from the Text File - "' + base + '" are Printed on Individual Files in the Features/' + output_file_name + ' Folder')    
     print("\n-----------------------------------------------------------------------------------------------------------")
 
-    return sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list
+    return sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list,born_synonyms,acquire_synonyms,part_of_synonyms

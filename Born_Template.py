@@ -13,23 +13,41 @@ from Part_Template_LOC import location_pattern
 # Initialization of the Spacy NLP Pipeline 
 nlp = spacy.load('en_core_web_sm')
 
-# Entity Ruler to add Patterns
-ruler = EntityRuler(nlp)
-
-# Patterns to Identify Born Templates
-patterns = [{"label": "BORN", "pattern": "founded by"}, {"label": "BORN", "pattern": "founded in"}, {"label": "BORN", "pattern": "founded on"}, {"label": "BORN", "pattern": "born on"},{"label": "BORN", "pattern": "founder of"},]
-
-# Adding the Patterns to the EntityRuler
-ruler.add_patterns(patterns)
-
-# Adding the Pipe to the NLP Pipeline
-nlp.add_pipe(ruler)
-
 # Adding the Neural Coreference Resolution to the Pipeline
 neuralcoref.add_to_pipe(nlp)
+# Patterns to Identify Born Templates
+patterns = [
+        {"label": "BORN", "pattern": "founded by"}, 
+        {"label": "BORN", "pattern": "founded in"}, 
+        {"label": "BORN", "pattern": "founded on"}, 
+        {"label": "BORN", "pattern": "born on"},
+        {"label": "BORN", "pattern": "founder of"}
+        ]
 
 
-def born_template_extraction(sentence,doc,ner_list,dp_list):
+def patternRuler(patterns_to_add):
+    
+    for word in patterns_to_add:
+        patterns.append({"label": "BORN", "pattern": word})
+    
+    temp = ""
+    for index,word in enumerate(patterns):
+        if(index == len(patterns)-1):
+             temp += word["pattern"]
+        else:
+            temp += word["pattern"] + "|"
+
+    # Entity Ruler to add Patterns
+    ruler = EntityRuler(nlp)
+    # Adding the Patterns to the EntityRuler
+    ruler.add_patterns(patterns)
+
+    # Adding the Pipe to the NLP Pipeline
+    nlp.add_pipe(ruler)
+                    
+    return temp
+
+def born_template_extraction(sentence,doc,ner_list,dp_list,search_str):
     
     # Blank Template Format for Born
     template = {"Parameter_1": "", "Date": "", "Location": ""}
@@ -72,7 +90,7 @@ def born_template_extraction(sentence,doc,ner_list,dp_list):
                         cur_token = [x.label_,x.text]
 
                     # Pattern Matching through RE and comparison with NER for first parameter of template
-                    if(re.search("(founded by|born on|founder of|founded on|founded in)", cur_token[1])):
+                    if(re.search(search_str, cur_token[1])):
                         if(prev_token[0]=="ORG" or prev_token[0]=="PERSON"):
                             template["Parameter_1"] = prev_token[1]
                     
@@ -101,8 +119,12 @@ def born_template_extraction(sentence,doc,ner_list,dp_list):
     return list_of_templates
 
 # Main Program to call the Born Template
-def getBorn(sentences,ners_list,dependency_parse_list):
+def getBorn(sentences,ners_list,dependency_parse_list,born_syn):
     
+    temp_search_string = patternRuler(born_syn)
+    search_string = ""
+    search_string += "(" + temp_search_string + ")"
+
     # Initialization of the final list of templates
     final_part=[]
     
@@ -122,7 +144,7 @@ def getBorn(sentences,ners_list,dependency_parse_list):
             sentence = nlp(sentence_text)
             
             # BORN Template Extraction Call
-            ans = born_template_extraction(sentence_text,sentence,selected_sentences_ner[index],selected_sentences_dependency_parse_structure[index])
+            ans = born_template_extraction(sentence_text,sentence,selected_sentences_ner[index],selected_sentences_dependency_parse_structure[index],search_string)
 
             # If no Template then Continue
             if(ans!=[]):

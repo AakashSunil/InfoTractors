@@ -12,23 +12,36 @@ from spacy.pipeline import EntityRuler
 # Initialization of the Spacy NLP Pipeline 
 nlp = spacy.load('en_core_web_sm')
 
-# Entity Ruler to add Patterns
-ruler = EntityRuler(nlp)
+# Adding the Neural Coreference Resolution to the Pipeline
+neuralcoref.add_to_pipe(nlp)
 
 # Patterns to Identify Acquire Templates
 patterns = [{"label": "ACQUIRE", "pattern": "acquired by"}, {"label": "ACQUIRE", "pattern": "acquired"},{"label": "ACQUIRE", "pattern": "acquire"},]
 
-# Adding the Patterns to the EntityRuler
-ruler.add_patterns(patterns)
+def patternRuler(patterns_to_add):
+    # Entity Ruler to add Patterns
+    ruler = EntityRuler(nlp)
 
-# Adding the Pipe to the NLP Pipeline
-nlp.add_pipe(ruler)
+    for word in patterns_to_add:
+        patterns.append({"label": "ACQUIRE", "pattern": word})
 
-# Adding the Neural Coreference Resolution to the Pipeline
-neuralcoref.add_to_pipe(nlp)
+    temp = ""
+    for index,word in enumerate(patterns):
+        if(index == len(patterns)-1):
+             temp += word["pattern"]
+        else:
+            temp += word["pattern"] + "|"
+
+    # Adding the Patterns to the EntityRuler
+    ruler.add_patterns(patterns)
+
+    # Adding the Pipe to the NLP Pipeline
+    nlp.add_pipe(ruler)
+
+    return temp
 
 # Extraction Function
-def acquire_template_extraction(doc,ner_list,dp_list):
+def acquire_template_extraction(doc,ner_list,dp_list,search_str):
 
     # Blank Template Format for Acquire
     template = {"Organization 1": "", "Organization 2": "", "Date": ""}
@@ -155,8 +168,8 @@ def acquire_template_extraction(doc,ner_list,dp_list):
     return list_of_templates
 
 # Function to check for Acquire Phrases using RE
-def acquire_relation_check(sentence):
-    if(re.search("(acquire|acquires|acquired by)", sentence)):
+def acquire_relation_check(sentence,search_str):
+    if(re.search(search_str, sentence)):
         return True
     return False
 
@@ -171,8 +184,12 @@ def acquire_template_sentence_check(sentence,ner_sentence,dp_sentence):
     return None
 
 # Main Program to call the Acquire Template
-def getAquire(sentences,ners_list,dependency_parse_list):
+def getAquire(sentences,ners_list,dependency_parse_list,acquire_syn):
     
+    temp_search_string = patternRuler(acquire_syn)
+    search_string = ""
+    search_string += "(" + temp_search_string + ")"
+
     # Initialization of the final list of templates
     final_part=[]
 
@@ -187,7 +204,7 @@ def getAquire(sentences,ners_list,dependency_parse_list):
 
     # Looping through Sentneces One by one to Filter
     for index,sentence in enumerate(sentences):
-        output_sentence = acquire_template_sentence_check(sentence,ners_list[index],dependency_parse_list[index])
+        output_sentence = acquire_template_sentence_check(sentence,ners_list[index],dependency_parse_list[index],search_string)
         
         if output_sentence is None:
             continue

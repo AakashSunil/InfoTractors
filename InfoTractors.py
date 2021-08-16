@@ -19,12 +19,12 @@ if(len(sys.argv) < 2):
         # ------------------------------------------------------------------------------------------------------------------------------------ #
         # ------------------------------------------- Task 1 - NLP Features from Input Text File --------------------------------------------- #
         # ------------------------------------------------------------------------------------------------------------------------------------ #
-        sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list = Features_Extraction(file_name)
+        sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list,born_syn,acquire_syn,part_syn = Features_Extraction(file_name)
         
         # ------------------------------------------------------------------------------------------------------------------------------------ #
         # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
         # ------------------------------------------------------------------------------------------------------------------------------------ #
-        Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name)
+        Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name,born_syn,acquire_syn,part_syn)
 
 else:
 
@@ -33,12 +33,12 @@ else:
     # ------------------------------------------------------------------------------------------------------------------------------------ #
     # ------------------------------------------- Task 1 - NLP Features from Input Text File --------------------------------------------- #
     # ------------------------------------------------------------------------------------------------------------------------------------ #
-    sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list = Features_Extraction(file_name)
+    sentences,words_list,pos_tag_list,wordnet_tagged_list,stemmas_list,lemmas_list,lemmas_wordnet_list,synonymns_list,hypernyms_list,hyponyms_list,meronyms_list,holonyms_list,dependency_parse_tree_list,ners_list,born_syn,acquire_syn,part_syn = Features_Extraction(file_name)
         
     # ------------------------------------------------------------------------------------------------------------------------------------ #
     # ------------------- Task 2 - Extract Information Templates using Heuristic, or Statistical or Both Methods ------------------------- #
     # ------------------------------------------------------------------------------------------------------------------------------------ #
-    Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name)
+    Template_Extraction(sentences,dependency_parse_tree_list,ners_list,file_name,born_syn,acquire_syn,part_syn)
 
 
 print('\nTemplate Extraction Completed\n')
